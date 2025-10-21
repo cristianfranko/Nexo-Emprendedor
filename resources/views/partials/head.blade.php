@@ -12,3 +12,23 @@
 
 @vite(['resources/css/app.css', 'resources/js/app.js'])
 @fluxAppearance
+
+<script>
+    if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+    } else {
+        document.documentElement.classList.remove('dark');
+    }
+
+    document.addEventListener('alpine:init', () => {
+        Alpine.store('theme', {
+            dark: document.documentElement.classList.contains('dark'),
+
+            toggle() {
+                this.dark = !this.dark;
+                localStorage.theme = this.dark ? 'dark' : 'light';
+                document.documentElement.classList.toggle('dark', this.dark);
+            },
+        });
+    });
+</script>

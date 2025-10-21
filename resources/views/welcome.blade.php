@@ -1,102 +1,14 @@
-<!DOCTYPE html>
-<html lang="es" class="scroll-smooth">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexo-Emprendedores | Emprendedores e Inversores</title>
-    @vite('resources/css/app.css')
-    @livewireStyles
-
-    <!-- Estilos para animación -->
-    <style>
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px) scale(0.95);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-        .animate-fade-in-up {
-            animation: fadeInUp 0.8s ease-out forwards;
-        }
-    </style>
-</head>
-<body class="bg-white text-gray-800 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300">
-  <div id="main-content"></div>
-    <!-- Navbar -->
-    <header class="flex justify-between items-center px-6 py-4 shadow-sm dark:shadow-gray-800">
-        <img 
-            src="{{ asset('images/nexo.png') }}" 
-            alt="Logo" 
-            class="w-40 h-20 dark:drop-shadow-[0_0_14px_rgba(255,255,255,1.95)] transition duration-300"
-        />
-
-        <nav class="flex items-center space-x-4">
-            @auth
-                <a href="{{ url('/dashboard') }}" class="text-sm hover:underline">Dashboard</a>
-            @else
-                <a href="{{ route('login') }}" class="px-4 py-2 text-sm rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition">
-                    Iniciar Sesión
-                </a>
-                <a href="{{ route('register') }}" class="px-4 py-2 text-sm rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition">
-                    Registrarse
-                </a>
-            @endauth
-
-            <!-- Botón modo oscuro (sincronizado con localStorage) -->
-            <button 
-                x-data="{ dark: localStorage.theme === 'dark' }"
-                @click="dark = !dark; localStorage.theme = dark ? 'dark' : 'light'"
-                class="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition"
-                aria-label="Alternar modo oscuro"
-            >
-                <svg x-show="!dark" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M10 2a.75.75 0 01.75.75V4a.75.75 0 01-1.5 0V2.75A.75.75 0 0110 2zM10 16a.75.75 0 01.75.75V18a.75.75 0 01-1.5 0v-1.25A.75.75 0 0110 16zM4 9.25a.75.75 0 000 1.5H2.75a.75.75 0 000-1.5H4zM17.25 9.25a.75.75 0 000 1.5H19a.75.75 0 000-1.5h-1.75zM4.22 4.22a.75.75 0 011.06 0L6.5 5.44a.75.75 0 11-1.06 1.06L4.22 5.28a.75.75 0 010-1.06zM14.56 14.56a.75.75 0 011.06 0l1.22 1.22a.75.75 0 01-1.06 1.06l-1.22-1.22a.75.75 0 010-1.06zM14.56 5.44a.75.75 0 010-1.06l1.22-1.22a.75.75 0 111.06 1.06L15.62 5.44a.75.75 0 01-1.06 0zM4.22 15.78a.75.75 0 010-1.06l1.22-1.22a.75.75 0 111.06 1.06L5.28 15.78a.75.75 0 01-1.06 0z"></path>
-                </svg>
-                <svg x-show="dark" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M17.293 13.293A8 8 0 016.707 2.707 8 8 0 1017.293 13.293z"></path>
-                </svg>
-            </button>
-        </nav>
-    </header>
-
+<x-layouts.guest>
     <!-- Hero -->
     <section class="relative text-center py-16 px-6 min-h-[60vh] flex flex-col justify-center items-center overflow-hidden">
-        <!-- Video de fondo -->
-        <video 
-            autoplay 
-            muted 
-            loop 
-            playsinline
-            class="absolute inset-0 w-full h-full object-cover z-0"
-        >
-            <source src="{{ asset('images/video.mp4') }}" type="video/mp4">
-            Tu navegador no soporta videos.
-        </video>
-
-        <!-- Capa de oscurecimiento -->
+        <video autoplay muted loop playsinline class="absolute inset-0 w-full h-full object-cover z-0"><source src="{{ asset('images/video.mp4') }}" type="video/mp4">Tu navegador no soporta videos.</video>
         <div class="absolute inset-0 bg-white/40 z-10"></div>
-
-        <!-- Contenido -->
         <div class="relative z-20 max-w-3xl">
-            <img 
-                src="{{ asset('images/nexo.png') }}" 
-                alt="Logo" 
-                class="w-80 h-40 mx-auto drop-shadow-[0_0_14px_rgba(255,255,255,1.8)] animate-fade-in-up"
-            />
-            <h1 class="text-3xl md:text-5xl font-bold mb-4 text-black">
-                Conectando Emprendedores e Inversores en la Zona NEA 🇦🇷
-            </h1>
-            <p class="max-w-4xl mx-auto text-white mb-6 drop-shadow-lg">
-                Un ecosistema digital donde las ideas innovadoras encuentran el apoyo que necesitan para crecer.
-            </p>
+            <img src="{{ asset('images/nexo.png') }}" alt="Logo" class="w-80 h-40 mx-auto drop-shadow-[0_0_14px_rgba(255,255,255,1.8)] animate-fade-in-up"/>
+            <h1 class="text-3xl md:text-5xl font-bold mb-4 text-black">Conectando Emprendedores e Inversores en la Zona NEA 🇦🇷</h1>
+            <p class="max-w-4xl mx-auto text-white mb-6 drop-shadow-lg">Un ecosistema digital donde las ideas innovadoras encuentran el apoyo que necesitan para crecer.</p>
             @guest
-                <a href="{{ route('register') }}" class="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg text-lg hover:bg-blue-700 transition">
-                    Comenzar Ahora
-                </a>
+                <a href="{{ route('register') }}" wire:navigate class="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg text-lg hover:bg-blue-700 transition">Comenzar Ahora</a>
             @endguest
         </div>
     </section>
@@ -106,15 +18,40 @@
     <section>@livewire('cotizaciones')</section>
     <section>@livewire('noticias-economia')</section>
 
-    <footer class="text-center py-6 text-sm border-t dark:border-gray-700">
-        © {{ date('Y') }} Zona NEA – Formosa. Todos los derechos reservados.
-    </footer>
-</div>
-   
-</body>
- <!-- Widget de accesibilidad (al final del body) -->
-    @livewire('accesibilidad-widget')
+    @push('scripts')
+        <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js" data-navigate-once></script>
+        
+        {{-- 2. Nuestro script de inicialización. --}}
+        <script>
+            function initSwiper() {
+                if (typeof Swiper === 'undefined') {
+                    return;
+                }
 
-    @livewireScripts
-    @stack('scripts')
-</html>
+                const swiperEl = document.querySelector('.mySwiper');
+                if (swiperEl && swiperEl.swiper) {
+                    swiperEl.swiper.destroy(true, true);
+                }
+
+                const slides = document.querySelectorAll('.mySwiper .swiper-slide');
+                if (slides.length === 0) return;
+
+                new Swiper('.mySwiper', {
+                    slidesPerView: 1,
+                    spaceBetween: 20,
+                    loop: slides.length > 3,
+                    pagination: { el: '.swiper-pagination', clickable: true },
+                    navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
+                    breakpoints: {
+                        640: { slidesPerView: 2 },
+                        1024: { slidesPerView: 3 },
+                    },
+                });
+            }
+
+            document.addEventListener('livewire:navigated', function () {
+                setTimeout(initSwiper, 50); 
+            });
+        </script>
+    @endpush
+</x-layouts.guest>

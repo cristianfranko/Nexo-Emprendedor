@@ -9,12 +9,13 @@ class MostrarProyectos extends Component
 {
     public function render()
     {
-        // 2. Consulta la base de datos para obtener los proyectos.
-        // Usamos 'with' para cargar las fotos y evitar consultas N+1 (más eficiente).
-        // Ordenamos por los más recientes.
-        $proyectos = Project::with('photos')->latest()->get();
+        // Consulta la base de datos para obtener los proyectos.
+        $proyectos = Project::with('photos') // Carga las fotos para eficiencia
+                            ->withCount('likes')      // Crea una nueva columna virtual 'likes_count'
+                            ->orderBy('likes_count', 'desc') // Ordena por la cantidad de likes de mayor a menor
+                            ->take(6)                 // Limita a los 6 proyectos más populares
+                            ->get();
 
-        // 3. Pasamos la colección de proyectos a la vista.
         return view('livewire.mostrar-proyectos', [
             'proyectos' => $proyectos
         ]);

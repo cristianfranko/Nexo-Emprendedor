@@ -1,19 +1,17 @@
 <div class="flex flex-col gap-6">
-    <x-auth-header :title="__('Create an account')" :description="__('Enter your details below to create your account')" />
+    <x-auth-header :title="__('Crea una cuenta')" :description="__('Ingresa tus datos para crear tu cuenta')" />
 
     <x-auth-session-status class="text-center" :status="session('status')" />
 
     <div x-data="faceRegister()">
         <form wire:submit="register" class="flex flex-col gap-6">
-            {{-- CAMPOS DEL FORMULARIO --}}
-            <flux:input wire:model="name" :label="__('Name')" type="text" required autofocus autocomplete="name" :placeholder="__('Full name')" />
-            <flux:input wire:model="email" :label="__('Email address')" type="email" required autocomplete="email" placeholder="email@example.com" />
-            <flux:input wire:model="password" :label="__('Password')" type="password" required autocomplete="new-password" :placeholder="__('Password')" viewable />
-            <flux:input wire:model="password_confirmation" :label="__('Confirm password')" type="password" required autocomplete="new-password" :placeholder="__('Confirm password')" viewable />
+            <flux:input wire:model="name" :label="__('Nombre')" type="text" required autofocus autocomplete="name" :placeholder="__('Nombre completo')" />
+            <flux:input wire:model="email" :label="__('Correo Electrónico')" type="email" required autocomplete="email" placeholder="email@ejemplo.com" />
+            <flux:input wire:model="password" :label="__('Contraseña')" type="password" required autocomplete="new-password" :placeholder="__('Contraseña')" viewable />
+            <flux:input wire:model="password_confirmation" :label="__('Confirmar Contraseña')" type="password" required autocomplete="new-password" :placeholder="__('Confirmar Contraseña')" viewable />
             
             <div class="grid gap-2">
                 <label for="role" class="font-medium text-sm text-zinc-700 dark:text-zinc-300">{{ __('Soy un...') }}</label>
-                {{-- <-- CAMBIO CLAVE 3: El atributo 'value' ahora está en inglés --}}
                 <select wire:model="role" id="role" class="block w-full border-zinc-300 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm">
                     <option value="" disabled>{{ __('Selecciona tu rol') }}</option>
                     <option value="entrepreneur">{{ __('Emprendedor') }}</option>
@@ -22,7 +20,6 @@
                 @error('role') <span class="text-sm text-red-600">{{ $message }}</span> @enderror
             </div>
 
-            {{-- SECCIÓN DE REGISTRO FACIAL --}}
             <div class="mt-2 pt-4 border-t border-zinc-200 dark:border-zinc-700">
                 <flux:subheading>{{ __('(Opcional) Añade tu rostro para un inicio de sesión rápido') }}</flux:subheading>
                 
@@ -44,12 +41,11 @@
             </div>
 
             <div class="flex items-center justify-end mt-4">
-                <flux:button type="submit" variant="primary" class="w-full">{{ __('Create account') }}</flux:button>
+                <flux:button type="submit" variant="primary" class="w-full">{{ __('Crear cuenta') }}</flux:button>
             </div>
         </form>
     </div>
 
-    {{-- El script de Alpine.js no necesita cambios --}}
     <script>
         function faceRegister() {
             return {
@@ -87,7 +83,7 @@
     </script>
 
     <div class="space-x-1 rtl:space-x-reverse text-center text-sm text-zinc-600 dark:text-zinc-400">
-        <span>{{ __('Already have an account?') }}</span>
-        <flux:link :href="route('login')" wire:navigate>{{ __('Log in') }}</flux:link>
+        <span>{{ __('¿Ya tienes una cuenta?') }}</span>
+        <flux:link :href="route('login')" wire:navigate>{{ __('Inicia Sesión') }}</flux:link>
     </div>
 </div>

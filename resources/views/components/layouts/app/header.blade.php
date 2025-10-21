@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" x-data x-bind:class="$store.theme.dark ? 'dark' : ''">
     <head>
         @include('partials.head')
     </head>
@@ -18,6 +18,20 @@
             </flux:navbar>
 
             <flux:spacer />
+
+            <!-- Botón de modo oscuro en el header de la app -->
+            <button 
+                @click="$store.theme.toggle()"
+                class="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition mr-2"
+                aria-label="Alternar modo oscuro"
+            >
+                <svg x-show="!$store.theme.dark" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10 2a.75.75 0 01.75.75V4a.75.75 0 01-1.5 0V2.75A.75.75 0 0110 2zM10 16a.75.75 0 01.75.75V18a.75.75 0 01-1.5 0v-1.25A.75.75 0 0110 16zM4 9.25a.75.75 0 000 1.5H2.75a.75.75 0 000-1.5H4zM17.25 9.25a.75.75 0 000 1.5H19a.75.75 0 000-1.5h-1.75zM4.22 4.22a.75.75 0 011.06 0L6.5 5.44a.75.75 0 11-1.06 1.06L4.22 5.28a.75.75 0 010-1.06zM14.56 14.56a.75.75 0 011.06 0l1.22 1.22a.75.75 0 01-1.06 1.06l-1.22-1.22a.75.75 0 010-1.06zM14.56 5.44a.75.75 0 010-1.06l1.22-1.22a.75.75 0 111.06 1.06L15.62 5.44a.75.75 0 01-1.06 0zM4.22 15.78a.75.75 0 010-1.06l1.22-1.22a.75.75 0 111.06 1.06L5.28 15.78a.75.75 0 01-1.06 0z"></path>
+                </svg>
+                <svg x-show="$store.theme.dark" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M17.293 13.293A8 8 0 016.707 2.707 8 8 0 1017.293 13.293z"></path>
+                </svg>
+            </button>
 
             <flux:navbar class="me-1.5 space-x-0.5 rtl:space-x-reverse py-0!">
                 <flux:tooltip :content="__('Search')" position="bottom">
@@ -118,6 +132,45 @@
         </flux:sidebar>
 
         {{ $slot }}
+
+        <script>
+            // Store de tema para el layout de app
+            document.addEventListener('alpine:init', () => {
+                if (!Alpine.store('theme')) {
+                    Alpine.store('theme', {
+                        dark: localStorage.getItem('theme') === 'dark' || 
+                              (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches),
+
+                        init() {
+                            this.updateDocumentClass();
+                        },
+
+                        toggle() {
+                            this.dark = !this.dark;
+                            localStorage.setItem('theme', this.dark ? 'dark' : 'light');
+                            this.updateDocumentClass();
+                        },
+
+                        updateDocumentClass() {
+                            if (this.dark) {
+                                document.documentElement.classList.add('dark');
+                            } else {
+                                document.documentElement.classList.remove('dark');
+                            }
+                        }
+                    });
+
+                    Alpine.store('theme').init();
+                }
+            });
+
+            // Fallback para aplicar el tema inmediatamente
+            if (localStorage.getItem('theme') === 'dark') {
+                document.documentElement.classList.add('dark');
+            } else if (localStorage.getItem('theme') === 'light') {
+                document.documentElement.classList.remove('dark');
+            }
+        </script>
 
         @fluxScripts
     </body>
