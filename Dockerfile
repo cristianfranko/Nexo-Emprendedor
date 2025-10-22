@@ -29,7 +29,7 @@ RUN apk add --no-cache \
     jpeg-dev \
     freetype-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo_pgsql zip bcmath gd
+    && docker-php-ext-install pdo_pgsql pdo_mysql zip bcmath gd
 
 # Limpiar cache de apk
 RUN rm -rf /var/cache/apk/*

@@ -1,6 +1,9 @@
 #!/bin/sh
 
-# entrypoint.sh
+# entrypoint.sh 
+
+# Asegurar los permisos correctos en cada inicio
+chown -R www-data:www-data storage bootstrap/cache
 
 # Ejecutar las optimizaciones de producción de Laravel
 php artisan config:cache
@@ -11,5 +14,4 @@ php artisan view:cache
 php artisan migrate --force
 
 # Iniciar Supervisor para gestionar Nginx y PHP-FPM
-# exec "$@" permite que supervisord se convierta en el proceso principal (PID 1)
 exec "$@"
