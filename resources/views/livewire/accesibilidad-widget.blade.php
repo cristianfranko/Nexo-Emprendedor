@@ -1,4 +1,5 @@
 <div 
+    class="fixed bottom-6 left-6 z-50 {{ $desktopPositionClass }}"
     x-data="{
         fontSize: 1,
         grayscale: false,
@@ -69,13 +70,11 @@
             this.fontSize = 1; this.grayscale = false; this.reducedMotion = false;
             this.applySettings();
             localStorage.removeItem('accesibilidad');
-            // También resetea el tema oscuro
             if (Alpine.store('theme').dark) {
                 Alpine.store('theme').toggle();
             }
         }
     }"
-    class="fixed bottom-6 right-6 z-50"
 >
     <!-- Botón flotante -->
     <button @click="$refs.panel.classList.toggle('hidden')" class="bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition flex items-center justify-center" aria-label="Abrir panel de accesibilidad">
@@ -83,13 +82,11 @@
     </button>
 
     <!-- Panel de accesibilidad -->
-    <div x-ref="panel" class="hidden mt-2 bg-white dark:bg-gray-800 rounded-lg shadow-xl p-4 w-64 border">
+    <div x-ref="panel" class="hidden bottom-0 mb-16 bg-white dark:bg-gray-800 rounded-lg shadow-xl p-4 w-64 border">
         <div class="flex justify-between items-center mb-3">
             <h3 class="font-bold text-gray-800 dark:text-white">Accesibilidad</h3>
             <button @click="$refs.panel.classList.add('hidden')" class="text-gray-500 hover:text-gray-700 text-lg">✕</button>
         </div>
-
-        <!-- Opciones -->
         <div class="mb-3">
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tamaño de texto</label>
             <div class="flex space-x-2">
@@ -100,11 +97,7 @@
         <div class="mb-3"><button @click="toggleGrayscale()" class="w-full text-left px-3 py-2 rounded bg-gray-100 dark:bg-gray-700 text-sm">Blanco y negro</button></div>
         <div class="mb-3"><button @click="toggleReducedMotion()" class="w-full text-left px-3 py-2 rounded bg-gray-100 dark:bg-gray-700 text-sm"><span x-text="reducedMotion ? 'Activar animaciones' : 'Sin animaciones'"></span></button></div>
         <div class="mb-3"><button @click="speakText()" class="w-full text-left px-3 py-2 rounded bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-200 text-sm font-medium">🎧 <span x-text="isSpeaking ? 'Detener lectura' : 'Leer en voz alta'"></span></button></div>
-        
-        <!-- Botón Modo nocturno -->
         <div class="mb-3"><button @click="$store.theme.toggle()" class="w-full text-left px-3 py-2 rounded bg-gray-100 dark:bg-gray-700 text-sm">Modo nocturno</button></div>
-
-        <!-- Restablecer -->
         <button @click="resetAll()" class="w-full mt-2 px-3 py-2 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-200 text-sm rounded">Restablecer todo</button>
     </div>
 </div>
