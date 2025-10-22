@@ -1,19 +1,24 @@
-# Dockerfile
-
 # --- Etapa 1: Builder ---
-# Imagen oficial de PHP con Composer para instalar dependencias de forma segura
+# Instala dependencias de PHP
 FROM composer:2 as builder
-
 WORKDIR /app
 COPY . .
-RUN composer install --no-dev --no-interaction --optimize-autoloader
+RUN composer install --no-dev --no-interaction --optimize-autoloader --ignore-platform-reqs
 
-# --- Etapa 2: Aplicación Final ---
-# Imagen ligera de Alpine con PHP-FPM
+# --- Etapa 2: Node Builder ---
+# Instala dependencias de Node y construye el frontend
+FROM node:18-alpine as node_builder
+WORKDIR /app
+COPY . .
+COPY --from=builder /app/vendor /app/vendor
+RUN npm install
+RUN npm run build
+
+# --- Etapa 3: Aplicación Final ---
+# Imagen final ligera con PHP y Nginx
 FROM php:8.2-fpm-alpine
 
-# Instalar dependencias del sistema y extensiones de PHP que Laravel necesita
-# pdo_pgsql para PostgreSQL, bcmath y gd.
+# Instalar dependencias del sistema y extensiones de PHP
 RUN apk add --no-cache \
     nginx \
     supervisor \
@@ -23,38 +28,33 @@ RUN apk add --no-cache \
     jpeg-dev \
     freetype-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install \
-    pdo_pgsql \
-    zip \
-    bcmath \
-    gd
+    && docker-php-ext-install pdo_pgsql zip bcmath gd
 
-# Limpiar el cache de apk
+# Limpiar cache de apk
 RUN rm -rf /var/cache/apk/*
 
-# Copiar la configuración de Nginx y Supervisor
+# Copiar configuraciones
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-# Establecer el directorio de trabajo
+# Establecer directorio de trabajo
 WORKDIR /var/www/html
 
-# Copiar los archivos de la aplicación desde la etapa de 'builder'
+# Copiar los archivos de la aplicación desde las etapas anteriores
 COPY --from=builder /app .
+COPY --from=node_builder /app/public/build ./public/build
 
-# Copiar el .env de producción
-COPY .env.production .env
+# Copiar el script de entrada y darle permisos de ejecución
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
 
-# Instalar dependencias de NPM y construir el frontend, instalar Node.js
-RUN apk add --update nodejs npm
-RUN npm install && npm run build
-
-# Ajustar permisos para que el servidor web pueda escribir en los directorios de Laravel
+# Ajustar permisos para Laravel
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Exponer el puerto 80 para Nginx
+# Exponer puerto
 EXPOSE 80
 
-# Comando para iniciar Nginx y PHP-FPM a través de Supervisor
+# Definir el punto de entrada y el comando por defecto
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
