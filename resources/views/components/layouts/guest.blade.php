@@ -60,44 +60,5 @@
 {{-- La pila de scripts para Swiper y otros --}}
 @stack('scripts')
 
-<script>
-    // Inicializar el store de tema antes de que Alpine.js cargue
-    document.addEventListener('alpine:init', () => {
-        Alpine.store('theme', {
-            dark: localStorage.getItem('theme') === 'dark' || 
-                  (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches),
-
-            init() {
-                // Aplicar el tema al inicializar
-                this.updateDocumentClass();
-            },
-
-            toggle() {
-                this.dark = !this.dark;
-                localStorage.setItem('theme', this.dark ? 'dark' : 'light');
-                this.updateDocumentClass();
-            },
-
-            updateDocumentClass() {
-                if (this.dark) {
-                    document.documentElement.classList.add('dark');
-                } else {
-                    document.documentElement.classList.remove('dark');
-                }
-            }
-        });
-
-        // Inicializar el tema inmediatamente
-        Alpine.store('theme').init();
-    });
-
-    // Fallback: aplicar tema basado en localStorage si Alpine no está listo
-    if (localStorage.getItem('theme') === 'dark') {
-        document.documentElement.classList.add('dark');
-    } else if (localStorage.getItem('theme') === 'light') {
-        document.documentElement.classList.remove('dark');
-    }
-</script>
-
 </body>
 </html>

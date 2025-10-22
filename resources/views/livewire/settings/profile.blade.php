@@ -2,7 +2,7 @@
     @include('partials.settings-heading')
 
     <x-settings.layout :heading="__('Profile')" :subheading="__('Update your name and email address')">
-        {{-- FORMULARIO EXISTENTE PARA ACTUALIZAR PERFIL --}}
+        {{-- FORMULARIO PARA ACTUALIZAR PERFIL --}}
         <form wire:submit="updateProfileInformation" class="my-6 w-full space-y-6">
             <flux:input wire:model="name" :label="__('Name')" type="text" required autofocus autocomplete="name" />
 
@@ -10,21 +10,21 @@
                 <flux:input wire:model="email" :label="__('Email')" type="email" required autocomplete="email" />
 
                 @if (auth()->user() instanceof \Illuminate\Contracts\Auth\MustVerifyEmail &&! auth()->user()->hasVerifiedEmail())
-                    <div>
-                        <flux:text class="mt-4">
-                            {{ __('Your email address is unverified.') }}
+                <div>
+                    <flux:text class="mt-4">
+                        {{ __('Your email address is unverified.') }}
 
-                            <flux:link class="text-sm cursor-pointer" wire:click.prevent="resendVerificationNotification">
-                                {{ __('Click here to re-send the verification email.') }}
-                            </flux:link>
-                        </flux:text>
+                        <flux:link class="text-sm cursor-pointer" wire:click.prevent="resendVerificationNotification">
+                            {{ __('Click here to re-send the verification email.') }}
+                        </flux:link>
+                    </flux:text>
 
-                        @if (session('status') === 'verification-link-sent')
-                            <flux:text class="mt-2 font-medium !dark:text-green-400 !text-green-600">
-                                {{ __('A new verification link has been sent to your email address.') }}
-                            </flux:text>
-                        @endif
-                    </div>
+                    @if (session('status') === 'verification-link-sent')
+                    <flux:text class="mt-2 font-medium !dark:text-green-400 !text-green-600">
+                        {{ __('A new verification link has been sent to your email address.') }}
+                    </flux:text>
+                    @endif
+                </div>
                 @endif
             </div>
 
@@ -39,12 +39,10 @@
             </div>
         </form>
 
-        {{-- COMPONENTE EXISTENTE PARA BORRAR USUARIO --}}
+        {{-- COMPONENTE PARA BORRAR USUARIO --}}
         <livewire:settings.delete-user-form />
 
-        {{-- ========================================================== --}}
-        {{-- INICIO DEL CÓDIGO AÑADIDO PARA REGISTRO FACIAL --}}
-        {{-- ========================================================== --}}
+        {{-- REGISTRO FACIAL --}}
         <div x-data="faceEnroll()" class="mt-10 pt-6 border-t border-zinc-200 dark:border-zinc-700">
             <flux:heading>{{ __('Inicio de Sesión Facial') }}</flux:heading>
             <flux:subheading>{{ __('Registra tu rostro para iniciar sesión de forma rápida y segura.') }}</flux:subheading>
@@ -59,11 +57,11 @@
                 {{-- Botones de control --}}
                 <div class="mt-4 flex gap-4">
                     <flux:button x-show="!cameraOpen" @click="startCamera()" type="button">{{ __('Activar Cámara') }}</flux:button>
-                    <flux:button x-show="cameraOpen" style="display: none;" @click="captureAndEnroll()" :disabled="loading" type="button">
+                    <flux:button x-show="cameraOpen" style="display: none;" @click="captureAndEnroll()" x-bind:disabled="loading" type="button">
                         <span x-show="!loading">{{ __('Registrar Mi Rostro') }}</span>
                         <span x-show="loading">{{ __('Procesando...') }}</span>
                     </flux:button>
-                    <flux:button x-show="cameraOpen" style="display: none;" @click="stopCamera()" variant="secondary" type="button">{{ __('Cancelar') }}</flux:button>
+                    <flux:button x-show="cameraOpen" style="display: none;" @click="stopCamera()" variant="filled" type="button">{{ __('Cancelar') }}</flux:button>
                 </div>
 
                 {{-- Mensajes de estado para el usuario --}}
@@ -83,7 +81,9 @@
                     startCamera() {
                         this.message = '';
                         this.cameraOpen = true;
-                        navigator.mediaDevices.getUserMedia({ video: true })
+                        navigator.mediaDevices.getUserMedia({
+                                video: true
+                            })
                             .then(stream => {
                                 this.stream = stream;
                                 this.$refs.video.srcObject = stream;
@@ -113,28 +113,36 @@
                         const imageDataUrl = canvas.toDataURL('image/jpeg');
 
                         fetch('{{ route("face.enroll") }}', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                            },
-                            body: JSON.stringify({ image: imageDataUrl })
-                        })
-                        .then(res => res.json().then(data => ({ status: res.status, body: data })))
-                        .then(({ status, body }) => {
-                            this.message = body.message;
-                            this.success = (status === 200);
-                            if (this.success) {
-                                this.stopCamera();
-                            }
-                        })
-                        .catch(() => {
-                            this.message = 'Ocurrió un error inesperado al contactar al servidor.';
-                            this.success = false;
-                        })
-                        .finally(() => {
-                            this.loading = false;
-                        });
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                },
+                                body: JSON.stringify({
+                                    image: imageDataUrl
+                                })
+                            })
+                            .then(res => res.json().then(data => ({
+                                status: res.status,
+                                body: data
+                            })))
+                            .then(({
+                                status,
+                                body
+                            }) => {
+                                this.message = body.message;
+                                this.success = (status === 200);
+                                if (this.success) {
+                                    this.stopCamera();
+                                }
+                            })
+                            .catch(() => {
+                                this.message = 'Ocurrió un error inesperado al contactar al servidor.';
+                                this.success = false;
+                            })
+                            .finally(() => {
+                                this.loading = false;
+                            });
                     }
                 }
             }

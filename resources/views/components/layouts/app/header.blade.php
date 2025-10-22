@@ -133,45 +133,6 @@
 
         {{ $slot }}
 
-        <script>
-            // Store de tema para el layout de app
-            document.addEventListener('alpine:init', () => {
-                if (!Alpine.store('theme')) {
-                    Alpine.store('theme', {
-                        dark: localStorage.getItem('theme') === 'dark' || 
-                              (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches),
-
-                        init() {
-                            this.updateDocumentClass();
-                        },
-
-                        toggle() {
-                            this.dark = !this.dark;
-                            localStorage.setItem('theme', this.dark ? 'dark' : 'light');
-                            this.updateDocumentClass();
-                        },
-
-                        updateDocumentClass() {
-                            if (this.dark) {
-                                document.documentElement.classList.add('dark');
-                            } else {
-                                document.documentElement.classList.remove('dark');
-                            }
-                        }
-                    });
-
-                    Alpine.store('theme').init();
-                }
-            });
-
-            // Fallback para aplicar el tema inmediatamente
-            if (localStorage.getItem('theme') === 'dark') {
-                document.documentElement.classList.add('dark');
-            } else if (localStorage.getItem('theme') === 'light') {
-                document.documentElement.classList.remove('dark');
-            }
-        </script>
-
         @fluxScripts
     </body>
 </html>

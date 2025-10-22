@@ -27,11 +27,16 @@
             }));
         },
         applySettings() {
-            document.body.style.fontSize = (16 * this.fontSize) + 'px';
-            const mainContent = document.getElementById('main-content');
-            if (mainContent) {
-                mainContent.style.filter = this.grayscale ? 'grayscale(100%)' : 'none';
-            }
+            // Apuntamos a document.documentElement (<html>) para el tamaño de fuente.
+            // Esto afectará a todas las unidades 'rem' de la página de manera consistente.
+            document.documentElement.style.fontSize = (16 * this.fontSize) + 'px';
+
+            // Apuntamos a document.documentElement para el filtro de escala de grises.
+            // Esto asegura que TODA la página se vea afectada, sin importar el layout.
+            // El widget en sí no se verá afectado porque usa `position: fixed`.
+            document.documentElement.style.filter = this.grayscale ? 'grayscale(100%)' : 'none';
+            
+            // La lógica para el movimiento reducido se mantiene en el body.
             document.body.style.scrollBehavior = this.reducedMotion ? 'auto' : 'smooth';
             const video = document.querySelector('video');
             if (video) {
@@ -58,7 +63,9 @@
                 this.isSpeaking = false;
                 return;
             }
-            const text = document.body.innerText;
+            // Obtenemos el texto del slot principal del layout de la app
+            const mainContent = document.querySelector('main');
+            const text = mainContent ? mainContent.innerText : document.body.innerText;
             const msg = new SpeechSynthesisUtterance(text.substring(0, 1000));
             msg.lang = 'es-AR';
             msg.onend = () => this.isSpeaking = false;
@@ -68,6 +75,8 @@
         },
         resetAll() {
             this.fontSize = 1; this.grayscale = false; this.reducedMotion = false;
+            // CAMBIO 3: Asegurarse de que el filtro también se limpie al resetear.
+            document.documentElement.style.filter = 'none';
             this.applySettings();
             localStorage.removeItem('accesibilidad');
             if (Alpine.store('theme').dark) {
@@ -76,13 +85,13 @@
         }
     }"
 >
-    <!-- Botón flotante -->
+
     <button @click="$refs.panel.classList.toggle('hidden')" class="bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition flex items-center justify-center" aria-label="Abrir panel de accesibilidad">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm9 7h-6v13h-2v-6h-2v6H9V9H3V7h18v2z"/></svg>
     </button>
-
-    <!-- Panel de accesibilidad -->
-    <div x-ref="panel" class="hidden bottom-0 mb-16 bg-white dark:bg-gray-800 rounded-lg shadow-xl p-4 w-64 border">
+    
+    <div x-ref="panel" class="hidden absolute bottom-0 mb-16 bg-white dark:bg-gray-800 rounded-lg shadow-xl p-4 w-64 border dark:border-gray-700">
+        <!-- Contenido del panel -->
         <div class="flex justify-between items-center mb-3">
             <h3 class="font-bold text-gray-800 dark:text-white">Accesibilidad</h3>
             <button @click="$refs.panel.classList.add('hidden')" class="text-gray-500 hover:text-gray-700 text-lg">✕</button>
