@@ -199,4 +199,19 @@ class Project extends Model
 
         return min((int) $progress, 100); // Devolvemos un entero y nos aseguramos de no pasar del 100%
     }
+
+    /**
+     * Calcula los días restantes hasta la fecha límite.
+     * Devuelve null si no hay fecha límite.
+     */
+    public function getDaysRemaining(): ?int
+    {
+        if (!$this->deadline) {
+            return null; // No hay fecha límite
+        }
+
+        $days = now()->diffInDays($this->deadline, false); // `false` permite números negativos si la fecha ya pasó
+
+        return max(0, $days); // Devuelve 0 si la fecha ya pasó, en lugar de un número negativo
+    }
 }
