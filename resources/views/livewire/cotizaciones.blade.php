@@ -16,7 +16,7 @@
             </h3>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 @foreach($dolares as $d)
-                    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-850 rounded-xl shadow p-4 border-l-4 border-blue-500">
+                    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-850 rounded-xl shadow p-4 border-l-4 border-blue-500 transition-all duration-300 ease-in-out hover:scale-[1.03] hover:shadow-xl">
                         <h4 class="font-bold text-lg text-gray-800 dark:text-white">{{ $d['nombre'] }}</h4>
                         <div class="mt-2 space-y-1 text-sm">
                             @if(isset($d['compra']))
@@ -43,7 +43,7 @@
             <h3 class="text-xl font-semibold mb-4 text-gray-700 dark:text-gray-300">🌎 Monedas Internacionales y Regionales</h3>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 @foreach($monedasExtranjeras as $m)
-                    <div class="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-gray-800 dark:to-gray-850 rounded-xl shadow p-4 border-l-4 border-green-500">
+                    <div class="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-gray-800 dark:to-gray-850 rounded-xl shadow p-4 border-l-4 border-green-500 transition-all duration-300 ease-in-out hover:scale-[1.03] hover:shadow-xl">
                         <div class="flex items-center justify-between">
                             <h4 class="font-bold text-lg text-gray-800 dark:text-white">{{ $m['nombre'] }}</h4>
                             <span class="bg-gray-200 dark:bg-gray-700 text-xs px-2 py-0.5 rounded">{{ $m['moneda'] }}</span>
