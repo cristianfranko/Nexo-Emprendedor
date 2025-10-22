@@ -180,4 +180,23 @@ class Project extends Model
             }
         }
     }
+
+    /**
+     * Calcula el porcentaje de financiación alcanzado basado en propuestas aceptadas.
+     */
+    public function getFundingProgress(): int
+    {
+        if ($this->funding_goal <= 0) {
+            return 0;
+        }
+
+        // Sumamos el monto de las propuestas que están 'negotiating' (aceptadas por el emprendedor)
+        $currentFunding = $this->investments()
+                               ->where('status', 'negotiating')
+                               ->sum('proposed_amount');
+
+        $progress = ($currentFunding / $this->funding_goal) * 100;
+
+        return min((int) $progress, 100); // Devolvemos un entero y nos aseguramos de no pasar del 100%
+    }
 }

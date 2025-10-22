@@ -26,13 +26,8 @@ class EntrepreneurDashboard extends Component
         session()->flash('message', 'Proyecto eliminado exitosamente.');
     }
 
-    /**
-     * Acepta una propuesta de inversión, cambiando su estado a 'negotiating'.
-     */
     public function acceptProposal(Investment $investment)
     {
-        // Medida de seguridad: Asegurarnos de que el emprendedor solo puede
-        // aceptar propuestas dirigidas a sus propios proyectos.
         if ($investment->project->user_id !== Auth::id()) {
             abort(403, 'Acción no autorizada.');
         }
@@ -41,20 +36,16 @@ class EntrepreneurDashboard extends Component
         $investment->save();
 
         Notification::create([
-            'user_id' => $investment->investor_id, // El inversor que hizo la propuesta
+            'user_id' => $investment->investor_id,
             'message' => "¡Buenas noticias! Tu propuesta para '{$investment->project->title}' ha sido aceptada. Ya puedes iniciar la conversación.",
-            'link' => route('conversation.show', $investment), // Enlace directo a la conversación
+            'link' => route('conversation.show', $investment),
         ]);
 
         session()->flash('message', '¡Propuesta aceptada! Ahora puedes comunicarte con el inversor.');
     }
 
-    /**
-     * Rechaza una propuesta de inversión.
-     */
     public function rejectProposal(Investment $investment)
     {
-        // Medida de seguridad similar.
         if ($investment->project->user_id !== Auth::id()) {
             abort(403, 'Acción no autorizada.');
         }
@@ -65,23 +56,33 @@ class EntrepreneurDashboard extends Component
         session()->flash('message', 'La propuesta ha sido rechazada.');
     }
 
+
     public function render()
     {
         $user = Auth::user();
 
-        // Obtenemos los proyectos del usuario.
-        $projects = $user->projects()->with('category')->latest()->get();
+        $projects = $user->projects()
+                         ->with('category')
+                         ->withCount(['likes', 'investments'])
+                         ->latest()
+                         ->get();
 
-        // Obtenemos las propuestas recibidas a través de la nueva relación,
-        // cargando también el proyecto y el inversor de cada propuesta para mostrarlos.
         $proposals = $user->proposals()
                           ->with(['project', 'investor'])
                           ->latest()
                           ->get();
 
+        $totalProjects = $projects->count();
+        $totalLikes = $projects->sum('likes_count');
+        $totalProposals = $proposals->count();
+
         return view('livewire.entrepreneur-dashboard', [
             'projects' => $projects,
             'proposals' => $proposals,
+            'totalProjects' => $totalProjects,
+            'totalLikes' => $totalLikes,
+            'totalProposals' => $totalProposals,
         ]);
+
     }
 }
