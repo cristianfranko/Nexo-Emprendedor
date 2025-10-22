@@ -3,7 +3,8 @@
 FROM composer:2 as builder
 WORKDIR /app
 COPY . .
-RUN composer install --no-dev --no-interaction --optimize-autoloader --ignore-platform-reqs
+
+RUN composer install --no-dev --no-interaction --optimize-autoloader --no-scripts --ignore-platform-reqs
 
 # --- Etapa 2: Node Builder ---
 # Instala dependencias de Node y construye el frontend
