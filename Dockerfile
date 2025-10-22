@@ -42,10 +42,6 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Crear y dar permisos a los directorios temporales de Nginx para la subida de archivos
-RUN mkdir -p /var/lib/nginx/tmp/client_body \
-    && chown -R www-data:www-data /var/lib/nginx/tmp
-
 EXPOSE 80
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
