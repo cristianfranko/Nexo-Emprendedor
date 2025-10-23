@@ -20,6 +20,8 @@ class MostrarProyectos extends Component
     {
         $this->showModal = false;
         $this->selectedProject = null;
+
+        $this->dispatch('modal-closed-reinit-swiper');
     }
 
     public function render()
