@@ -1,18 +1,19 @@
 <div class="px-6 py-12 max-w-7xl mx-auto">
     <h2 class="text-2xl font-semibold mb-6 text-center">🌱 Proyectos Destacados</h2>
 
+    {{-- El link a Swiper CSS --}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 
+    {{-- Estructura HTML del carrusel --}}
     <div class="swiper mySwiper">
         <div class="swiper-wrapper">
             @forelse($proyectos as $proyecto)
                 <div class="swiper-slide">
-                    {{-- CAMBIO 1: Añadimos wire:click para abrir el modal y cursor-pointer --}}
                     <div wire:click="showProjectDetails({{ $proyecto->id }})" class="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-transparent hover:shadow-xl hover:scale-[1.03] dark:hover:border-blue-500 transition-all duration-300 ease-in-out overflow-hidden h-full flex flex-col cursor-pointer">
                         @if ($proyecto->photos->isNotEmpty())
-                            <img 
-                                src="{{ Storage::url($proyecto->photos->first()->path) }}" 
-                                alt="{{ $proyecto->title }}" 
+                            <img
+                                src="{{ Storage::url($proyecto->photos->first()->path) }}"
+                                alt="{{ $proyecto->title }}"
                                 class="w-full h-48 object-cover"
                             >
                         @else
@@ -34,14 +35,15 @@
             @endforelse
         </div>
 
+        {{-- Controles de navegación y paginación de Swiper --}}
         <div class="swiper-button-next !text-blue-600 dark:!text-blue-400"></div>
         <div class="swiper-button-prev !text-blue-600 dark:!text-blue-400"></div>
         <div class="swiper-pagination !bottom-0 mt-4"></div>
     </div>
 
-    {{-- CAMBIO 2: Añadimos el modal --}}
+    {{-- El Modal que se abre al hacer clic en un proyecto --}}
     @if ($showModal && $selectedProject)
-    <div 
+    <div
         class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm"
         x-data="{ show: @entangle('showModal') }"
         x-show="show"
@@ -65,7 +67,7 @@
                 @if ($selectedProject->photos->isNotEmpty())
                     <img src="{{ Storage::url($selectedProject->photos->first()->path) }}" alt="{{ $selectedProject->title }}" class="w-full h-64 object-cover rounded-lg mb-4">
                 @endif
-                
+
                 <p class="text-indigo-600 dark:text-indigo-400 font-semibold mb-4">{{ $selectedProject->category->name }}</p>
 
                 <div class="grid grid-cols-2 gap-4 text-center mb-6">
@@ -93,8 +95,7 @@
                 @auth
                     @if(Auth::user()->role === 'investor')
                         <p class="text-sm mb-2">Da el siguiente paso y apoya esta idea.</p>
-                        {{-- Este botón despacha el evento que abre el otro modal para proponer --}}
-                        <button 
+                        <button
                             wire:click="$dispatch('open-proposal-modal', { projectId: {{ $selectedProject->id }} })"
                             class="inline-block px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
                         >
@@ -109,60 +110,53 @@
     </div>
     @endif
 
-    {{-- Esto asegura que el modal de propuesta de inversión siga funcionando --}}
+    {{-- Aseguramos que el modal de propuesta de inversión siga funcionando --}}
     @if(Auth::check() && Auth::user()->role === 'investor')
         <livewire:investment.proposal-modal />
     @endif
 
-    {{-- El script de Swiper no necesita cambios --}}
-    <script>
-        // ... (tu script de Swiper se mantiene igual)
-    </script>
 </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-    <script>
-        let swiperInstance = null;
+{{-- SCRIPT PARA INICIALIZAR Y RE-INICIALIZAR SWIPER --}}
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script>
+    function initializeSwiper() {
+        const swiperContainer = document.querySelector('.mySwiper');
+        if (!swiperContainer) return;
 
-        function initSwiper() {
-            // Destruir la instancia anterior si existe
-            if (swiperInstance !== null) {
-                swiperInstance.destroy(true, true);
-                swiperInstance = null;
-            }
-
-            const slides = document.querySelectorAll('.mySwiper .swiper-slide');
-            if (slides.length === 0) return;
-
-            swiperInstance = new Swiper('.mySwiper', {
-                slidesPerView: 1,
-                spaceBetween: 20,
-                loop: slides.length > 3,
-                pagination: {
-                    el: '.swiper-pagination',
-                    clickable: true,
-                },
-                navigation: {
-                    nextEl: '.swiper-button-next',
-                    prevEl: '.swiper-button-prev',
-                },
-                breakpoints: {
-                    640: {
-                        slidesPerView: 2
-                    },
-                    1024: {
-                        slidesPerView: 3
-                    },
-                },
-            });
+        if (swiperContainer.swiper) {
+            swiperContainer.swiper.destroy(true, true);
         }
 
-        // Inicializar al cargar la página
-        document.addEventListener('DOMContentLoaded', initSwiper);
+        new Swiper('.mySwiper', {
+            slidesPerView: 1,
+            spaceBetween: 20,
+            loop: document.querySelectorAll('.mySwiper .swiper-slide').length > 3,
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+            },
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+            },
+            breakpoints: {
+                640: { slidesPerView: 2 },
+                1024: { slidesPerView: 3 },
+            },
+        });
+    }
 
-        // Reinicializar cuando Livewire actualice el DOM
-        document.addEventListener('livewire:navigated', initSwiper);
-        document.addEventListener('livewire:updated', initSwiper);
-    </script>
-</div>
+    document.addEventListener('livewire:navigated', () => {
+        initializeSwiper();
+    });
+
+    window.addEventListener('modal-closed-reinit-swiper', () => {
+
+        setTimeout(() => {
+            initializeSwiper();
+        }, 50);
+    });
+
+    initializeSwiper();
+</script>
