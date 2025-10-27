@@ -2,7 +2,7 @@
     <!-- Hero -->
     <section class="relative text-center py-16 px-6 min-h-[60vh] flex flex-col justify-center items-center overflow-hidden">
         <video autoplay muted loop playsinline class="absolute inset-0 w-full h-full object-cover z-0">
-            <source src="{{ asset('images/video.mp4') }}" type="video/mp4">Tu navegador no soporta videos.
+            <source src="{{ asset('images/nexo.webm') }}" type="video/mp4">Tu navegador no soporta videos.
         </video>
         <div class="absolute inset-0 bg-white/40 z-10"></div>
         <div class="relative z-20 max-w-3xl">
